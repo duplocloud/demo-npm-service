@@ -14,6 +14,9 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
+      - run:
+        name: Authenticate with registry
+        command: echo "//npm.pkg.github.com/:_authToken=$GIT_TOKEN" > ~/repo/.npmrc
 
       - run: npm install
 #      - run:
