@@ -26,6 +26,8 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - setup_remote_docker:
+          version: 19.03.13
       - run: 
           name: build docker container
           command: docker build .
