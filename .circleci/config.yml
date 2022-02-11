@@ -30,29 +30,12 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  deploy:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run:
-          name: Authenticate with registry
-          command: echo "//npm.pkg.github.com/:_authToken=$GIT_TOKEN" > ~/repo/.npmrc
-      - run:
-          name: Publish package
-          command: npm run release --ci --major --no-git.requireCleanWorkingDir
 
 workflows:
   version: 2.1
-  build_test_deploy:
+  build_test:
     jobs:
       - build_and_test:
           filters:
             tags:
               only: /^v.*/
-      - deploy:
-          requires:
-            - build_and_test
-          filters:
-            branches:
-              only: master
