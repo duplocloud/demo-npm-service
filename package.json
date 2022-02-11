@@ -1,0 +1,23 @@
+{
+  "name": "demo-npm-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duplocloud/demo-npm-service.git"
+  },
+  "author": "Ganesh <ganesh@duplocloud.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duplocloud/demo-npm-service/issues"
+  },
+  "homepage": "https://github.com/duplocloud/demo-npm-service#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "@duplocloud/demo-npm-package": "^1.2.0"
+  }
+}
