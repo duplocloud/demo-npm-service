@@ -58,3 +58,6 @@ workflows:
             tags:
               only: /^v.*/
       - publish_docker_images:
+          filters:
+            tags:
+              only: /^v.*/
