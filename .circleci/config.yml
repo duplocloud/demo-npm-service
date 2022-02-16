@@ -28,21 +28,26 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       - setup_remote_docker:
           version: 19.03.13
-        
-      - persist_to_workspace:
-          root: ~/repo/.circleci/duplo_utils.sh
-          paths: .
-   publish_dev:
-    <<: *defaults
-    steps:
       - run: 
           name: build docker container
+          command: docker build .
+        
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+  publish_docker_images:
+    <<: *defaults
+    steps:
+      - run:
+          name: Authenticate with registry
           command: |
-             tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
-             source ~/repo/.circleci/duplo_utils.sh
-             docker build -t docker tag demo-npm-service:latest public.ecr.aws/p9c8y2k3/demo-npm-service:$tag . 
-             with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p9c8y2k3
-             with_aws docker push docker tag demo-npm-service:latest public.ecr.aws/p9c8y2k3/demo-npm-service:$tag
+            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
+            source ~/repo/.circleci/duplo_utils.sh
+            docker build -t docker tag demo-npm-service:latest public.ecr.aws/p9c8y2k3/demo-npm-service:$tag . 
+            with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p9c8y2k3
+            with_aws docker push docker tag demo-npm-service:latest public.ecr.aws/p9c8y2k3/demo-npm-service:$tag
+             
+
 
 workflows:
   version: 2.1
@@ -52,4 +57,4 @@ workflows:
           filters:
             tags:
               only: /^v.*/
-      - publish_dev:
+    publish_docker_images:
