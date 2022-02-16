@@ -2,7 +2,7 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: cimg/node:17.5.0
+    - image: circleci/aws-ecr@7.3.0
 
 jobs:
   build_and_test:
@@ -36,7 +36,9 @@ jobs:
           root: ~/repo
           paths: .
   publish_docker_images:
-    <<: *defaults
+    working_directory: ~/repo
+    docker:
+      - image: circleci/aws-ecr@7.3.0
     steps:
       - attach_workspace:
           at: ~/repo
