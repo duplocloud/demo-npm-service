@@ -38,6 +38,8 @@ jobs:
   publish_docker_images:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run:
           name: Authenticate with registry
           command: |
