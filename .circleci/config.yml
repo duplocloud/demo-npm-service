@@ -2,7 +2,7 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/aws-ecr@7.3.0
+    - image: cimg/node:17.5.0
 
 jobs:
   build_and_test:
