@@ -51,10 +51,10 @@ jobs:
 
 workflows:
   version: 2.1
-  build_test:
+  build_test_publish:
     jobs:
       - build_and_test:
           filters:
             tags:
               only: /^v.*/
-    publish_docker_images:
+      - publish_docker_images:
