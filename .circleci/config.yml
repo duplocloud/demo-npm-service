@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Authenticate with registry
           command: |
-            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
+            tag="$(node -p "require('~/repo/package.json').version")-${CIRCLE_BUILD_NUM}"
             source ~/repo/.circleci/duplo_utils.sh
             docker build -t docker tag demo-npm-service:latest public.ecr.aws/p9c8y2k3/demo-npm-service:$tag . 
             with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p9c8y2k3
