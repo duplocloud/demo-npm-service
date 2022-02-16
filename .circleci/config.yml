@@ -60,6 +60,8 @@ workflows:
             tags:
               only: /^v.*/
       - publish_docker_images:
+          requires:
+            - build_and_test
           filters:
             tags:
               only: /^v.*/
