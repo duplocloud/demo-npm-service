@@ -40,6 +40,8 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - setup_remote_docker:
+          version: 19.03.13
       - run:
           name: Authenticate with registry
           command: |
