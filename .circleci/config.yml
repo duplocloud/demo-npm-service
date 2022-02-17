@@ -9,6 +9,7 @@ defaults: &defaults
     QA_TENANT_ID: 97a8d5a4-2662-4e9c-9867-9a4565ec5cb6
     DOCKER_REPO: public.ecr.aws/p9c8y2k3
     DOCKER_IMAGE_NAME: demo-npm-service
+    DUPLO_SERVICE_NAME: nginx
 
 jobs:
   build_and_test:

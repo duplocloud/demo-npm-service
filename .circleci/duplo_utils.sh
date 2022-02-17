@@ -127,7 +127,7 @@ update_service(){
 	# esac
   tenant="${DEV_TENANT_ID}"
   echo "Tenant Id ${tenant}"
-  data="{\"Name\": \"${SERVICE_NAME}\",\"Image\":\"${tag}\"}"
+  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${tag}\"}"
    echo "Tenant Id ${data}"
   curl -Ssf -H 'Content-type: application/json' -X POST -H "Authorization: Bearer $DUPLO_TOKEN" -X POST --data "${data}" "${DUPLO_HOST}/subscriptions/${tenant}/ReplicationControllerChange" 
 }
