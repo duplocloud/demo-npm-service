@@ -38,12 +38,18 @@ jobs:
   publish_docker_images:
     working_directory: ~/repo
     docker:
-      - image: circleci/aws-ecr@7.3.0
+      - image: cimg/node:17.5.0
     steps:
       - attach_workspace:
           at: ~/repo
       - setup_remote_docker:
           version: 19.03.13
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install
       - run:
           name: Authenticate with registry
           command: |
