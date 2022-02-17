@@ -64,15 +64,14 @@ jobs:
             docker_tag=$(get_docker_tag $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
-            push_container $docker_tag
+            push_container $tag
             
       - run:
           name: Update the service
           command: |
             source ./.circleci/duplo_utils.sh
             tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
-            DOCKER_IMAGE=$(get_docker_tag $tag)
-            update_service
+            update_service $tag
 
 
 workflows:
