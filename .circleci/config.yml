@@ -3,6 +3,12 @@ defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: cimg/node:17.5.0
+  environmnet:
+    DEV_TENANT_ID="9a8a0506-3598-4ce5-80fe-6a5307b98ea3"
+    PROD_TENANT_ID="97a8d5a4-2662-4e9c-9867-9a4565ec5cb6"
+    QA_TENANT_ID="97a8d5a4-2662-4e9c-9867-9a4565ec5cb6"
+    DOCKER_REPO=public.ecr.aws/p9c8y2k3
+    DOCKER_IMAGE_NAME=demo-npm-service
 
 jobs:
   build_and_test:
@@ -51,14 +57,22 @@ jobs:
             unzip awscliv2.zip
             sudo ./aws/install
       - run:
-          name: Authenticate with registry
+          name: Create and Push Docker container
           command: |
-            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
             source ./.circleci/duplo_utils.sh
-            docker build -t public.ecr.aws/p9c8y2k3/demo-npm-service:$tag . 
-            with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/p9c8y2k3
-            with_aws docker push public.ecr.aws/p9c8y2k3/demo-npm-service:$tag
-             
+            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
+            docker_tag=$(get_docker_tag $tag)
+            echo "Starting build for container: $docker_tag"
+            docker build -t $docker_tag . 
+            push_container $docker_tag
+            
+      - run:
+          name: Update the service
+          command: |
+            source ./.circleci/duplo_utils.sh
+            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
+            DOCKER_IMAGE=$(get_docker_tag $tag)
+            update_service
 
 
 workflows:

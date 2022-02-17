@@ -35,6 +35,18 @@ duplo_api() {
     curl -Ssf -H 'Content-type: application/json' -H "Authorization: Bearer $DUPLO_TOKEN" "$@" "${DUPLO_HOST}/${path}"
 }
 
+duplo_api_post() {
+    local path="${1:-}"
+    [ $# -eq 0 ] || shift
+
+    [ -z "${path:-}" ] && die "internal error: no API path was given"
+    [ -z "${DUPLO_HOST:-}" ] && die "internal error: duplo_host environment variable must be set"
+    [ -z "${DUPLO_TOKEN:-}" ] && die "internal error: duplo_token environment variable must be set"
+
+    curl -Ssf -H 'Content-type: application/json' -X POST -H "Authorization: Bearer $DUPLO_TOKEN" "$@"  "${DUPLO_HOST}/${path}" --data-binary "@sd_dev.json"
+}
+
+
 # Utility function to set up AWS credentials before running a command.
 with_aws() {
   local duplo_tenant_id="${DUPLO_TENANT_ID:-}"
@@ -73,4 +85,47 @@ tf() {
 tf_init() {
   rm -f .terraform/environment .terraform/terraform.tfstate
   tf init "$@"
+}
+
+get_tag(){
+  case "${CIRCLE_BRANCH:-na}" in
+		master)
+		post_fix=""
+		;;
+		dev)
+		post_fix="-dev-${CIRCLE_BUILD_NUM}"
+		;;
+		duplo)
+		post_fix="-rc-${CIRCLE_BUILD_NUM}"
+		;;
+	esac
+	echo "$@${post_fix}"
+}
+
+get_docker_tag(){
+  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$(get_tag $@)"
+}
+
+push_container(){
+  with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REPO
+  with_aws docker push $@
+}
+
+update_service(){
+  tag=$(get_docker_tag $@)
+  case "${CIRCLE_BRANCH:-na}" in
+		master)
+		tenant="${PROD_TENANT_ID}"
+		;;
+		dev)
+		tenant="${DEV_TENANT_ID}"
+		;;
+		release/@tag)
+		tenant="${QA_TENANT_ID}"
+		;;
+	esac
+  echo "Tenant Id ${tenant}"
+  data="{\"Name\": \"${SERVICE_NAME}\",\"Image\":\"${tag}\"}"
+   echo "Tenant Id ${data}"
+  curl -Ssf -H 'Content-type: application/json' -X POST -H "Authorization: Bearer $DUPLO_TOKEN" -X POST --data "${data}" "${DUPLO_HOST}/subscriptions/${tenant}/ReplicationControllerChange" 
 }
