@@ -88,18 +88,18 @@ tf_init() {
 }
 
 get_tag(){
-  case "${CIRCLE_BRANCH:-na}" in
-		master)
-		post_fix=""
-		;;
-		dev)
-		post_fix="-dev-${CIRCLE_BUILD_NUM}"
-		;;
-		duplo)
-		post_fix="-rc-${CIRCLE_BUILD_NUM}"
-		;;
-	esac
-	echo "$@${post_fix}"
+  # case "${CIRCLE_BRANCH:-na}" in
+	# 	master)
+	# 	post_fix=""
+	# 	;;
+	# 	dev)
+	# 	post_fix="-dev-${CIRCLE_BUILD_NUM}"
+	# 	;;
+	# 	duplo)
+	# 	post_fix="-rc-${CIRCLE_BUILD_NUM}"
+	# 	;;
+	# esac
+	echo "$@"
 }
 
 get_docker_tag(){
@@ -114,17 +114,18 @@ push_container(){
 
 update_service(){
   tag=$(get_docker_tag $@)
-  case "${CIRCLE_BRANCH:-na}" in
-		master)
-		tenant="${PROD_TENANT_ID}"
-		;;
-		dev)
-		tenant="${DEV_TENANT_ID}"
-		;;
-		release/@tag)
-		tenant="${QA_TENANT_ID}"
-		;;
-	esac
+  # case "${CIRCLE_BRANCH:-na}" in
+	# 	master)
+	# 	tenant="${PROD_TENANT_ID}"
+	# 	;;
+	# 	dev)
+	# 	tenant="${DEV_TENANT_ID}"
+	# 	;;
+	# 	release/@tag)
+	# 	tenant="${QA_TENANT_ID}"
+	# 	;;
+	# esac
+  tenant = "${DEV_TENANT_ID}"
   echo "Tenant Id ${tenant}"
   data="{\"Name\": \"${SERVICE_NAME}\",\"Image\":\"${tag}\"}"
    echo "Tenant Id ${data}"

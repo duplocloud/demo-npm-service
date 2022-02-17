@@ -4,11 +4,11 @@ defaults: &defaults
   docker:
     - image: cimg/node:17.5.0
   environmnet:
-    DEV_TENANT_ID="9a8a0506-3598-4ce5-80fe-6a5307b98ea3"
-    PROD_TENANT_ID="97a8d5a4-2662-4e9c-9867-9a4565ec5cb6"
-    QA_TENANT_ID="97a8d5a4-2662-4e9c-9867-9a4565ec5cb6"
-    DOCKER_REPO=public.ecr.aws/p9c8y2k3
-    DOCKER_IMAGE_NAME=demo-npm-service
+    DEV_TENANT_ID: 9a8a0506-3598-4ce5-80fe-6a5307b98ea3
+    PROD_TENANT_ID: 97a8d5a4-2662-4e9c-9867-9a4565ec5cb6
+    QA_TENANT_ID: 97a8d5a4-2662-4e9c-9867-9a4565ec5cb6
+    DOCKER_REPO: public.ecr.aws/p9c8y2k3
+    DOCKER_IMAGE_NAME: demo-npm-service
 
 jobs:
   build_and_test:
@@ -64,16 +64,13 @@ jobs:
             docker_tag=$(get_docker_tag $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
-            push_container $tag
-            
+            push_container $tag      
       - run:
           name: Update the service
           command: |
             source ./.circleci/duplo_utils.sh
             tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
             update_service $tag
-
-
 workflows:
   version: 2.1
   build_test_publish:
