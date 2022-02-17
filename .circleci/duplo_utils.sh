@@ -99,7 +99,7 @@ get_tag(){
 	# 	post_fix="-rc-${CIRCLE_BUILD_NUM}"
 	# 	;;
 	# esac
-	echo "$@"
+	echo "$@-${CIRCLE_BUILD_NUM}"
 }
 
 get_docker_tag(){
