@@ -60,7 +60,7 @@ jobs:
           name: Create and Push Docker container
           command: |
             source ./.circleci/duplo_utils.sh
-            tag="$(node -p "require('./package.json').version")-${CIRCLE_BUILD_NUM}"
+            tag="$(node -p "require('./package.json').version")}"
             docker_tag=$(get_docker_tag $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
