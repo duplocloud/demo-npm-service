@@ -125,7 +125,7 @@ update_service(){
 	# 	tenant="${QA_TENANT_ID}"
 	# 	;;
 	# esac
-  tenant = "${DEV_TENANT_ID}"
+  tenant="${DEV_TENANT_ID}"
   echo "Tenant Id ${tenant}"
   data="{\"Name\": \"${SERVICE_NAME}\",\"Image\":\"${tag}\"}"
    echo "Tenant Id ${data}"
