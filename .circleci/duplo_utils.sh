@@ -119,6 +119,7 @@ release_container(){
   rctag=$(get_docker_tag_rc $@)
   tag=$(get_docker_tag $@)
   latesttag=$(get_docker_tag "latest")
+  echo "Retagging RC tag:${rctag} with release tag ${tag} and ${latesttag}"
   with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REPO
   docker pull $rctag
   docker tag $rctag $tag
