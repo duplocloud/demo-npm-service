@@ -127,7 +127,7 @@ jobs:
             echo "Verifying Prod Environment"
   release_finish:
     <<: *defaults
-     steps:
+    steps:
       - attach_workspace:
           at: ~/repo
       - run:
