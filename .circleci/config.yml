@@ -12,6 +12,7 @@ defaults: &defaults
     DOCKER_IMAGE_NAME: demo-npm-service
     DUPLO_SERVICE_NAME: nginx
     ECR_REGION: us-west-2
+    CIRCLE_PIPELINE_NUMBER: << pipeline.number >>
 jobs:
   BuildAndTest:
     <<: *defaults

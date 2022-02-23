@@ -93,7 +93,7 @@ tf_init() {
 }
 
 get_rc_tag(){
-	echo "$@-rc-${CIRCLE_BUILD_NUM}"
+	echo "$@-rc-${CIRCLE_PIPELINE_NUMBER}"
 }
 
 get_docker_tag_rc(){
