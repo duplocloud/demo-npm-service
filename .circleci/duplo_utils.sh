@@ -92,18 +92,39 @@ tf_init() {
   tf init "$@"
 }
 
-get_tag(){
-	echo "$@"
+get_rc_tag(){
+	echo "$@-rc-${CIRCLE_BUILD_NUM}"
+}
+
+get_docker_tag_rc(){
+  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$(get_rc_tag $@)"
 }
 
 get_docker_tag(){
-  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$(get_tag $@)"
+  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$@"
+}
+
+push_container_rc(){
+  tag=$(get_rc_tag $@)
+  push_container $tag
 }
 
 push_container(){
   tag=$(get_docker_tag $@)
   with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REPO
   with_aws docker push $tag
+}
+
+release_container(){
+  rctag=$(get_docker_tag_rc $@)
+  tag=$(get_docker_tag $@)
+  latesttag=$(get_docker_tag "latest")
+  with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REPO
+  docker pull $rctag
+  docker tag $rctag $tag
+  docker tag $rctag $latesttag
+  docker push $tag
+  docker push $latesttag
 }
 
 get_tenant_id(){
@@ -123,12 +144,26 @@ install_dependencies(){
   sudo wget https://github.com/mikefarah/yq/releases/download/v4.20.2/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
 }
 
+update_service_rc(){
+  local tenant="${1:-}"
+  [ $# -eq 0 ] || shift
+  tag="${1:-}"
+  [ $# -eq 0 ] || shift
+  tag=$(get_docker_tag_rc $tag)
+  echo "Updating service in tenant: ${tenant}"
+  local tenantId=$(get_tenant_id $tenant)
+  echo "Updating service in tenant id: ${tenantId}"
+  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${tag}\"}"
+  echo "Update service for tenant: ${tenantId}, Update: ${data}"
+  duplo_api_post "subscriptions/${tenantId}/ReplicationControllerChange" "$data"
+}
+
 update_service(){
   local tenant="${1:-}"
   [ $# -eq 0 ] || shift
   tag="${1:-}"
   [ $# -eq 0 ] || shift
-  tag=$(get_docker_tag $@)
+  tag=$(get_docker_tag $tag)
   echo "Updating service in tenant: ${tenant}"
   local tenantId=$(get_tenant_id $tenant)
   echo "Updating service in tenant id: ${tenantId}"

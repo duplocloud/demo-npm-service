@@ -43,7 +43,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  publish_docker_images:
+  publish_docker_rc_docker_image:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -61,7 +61,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            docker_tag=$(get_docker_tag $tag)
+            docker_tag=$(get_docker_tag_rc $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
             push_container $tag
@@ -74,8 +74,8 @@ jobs:
           name: Update Dev Environment
           command: |
             source ./.circleci/duplo_utils.sh
-            tag=$(git rev-parse HEAD)
-            update_service $DEV_TENANT $tag
+            tag=$(node -p "require('./package.json').version")
+            update_service_rc $DEV_TENANT $tag
       - run:
           name: Verify Dev Environment
           command: |
@@ -89,8 +89,8 @@ jobs:
           name: Update staging Environment
           command: |
             source ./.circleci/duplo_utils.sh
-            tag=$(git rev-parse HEAD)
-            update_service $STAGING_TENANT $tag
+            tag=$(node -p "require('./package.json').version")
+            update_service_rc $STAGING_TENANT $tag
       - run:
           name: Verify Dev Environment
           command: |
@@ -104,8 +104,8 @@ jobs:
           name: Update PreProd Environment
           command: |
             source ./.circleci/duplo_utils.sh
-            tag=$(git rev-parse HEAD)
-            update_service $STAGING_TENANT $tag
+            tag=$(node -p "require('./package.json').version")
+            update_service_rc $STAGING_TENANT $tag
       - run:
           name: Verify PreProd Environment
           command: |
@@ -119,12 +119,23 @@ jobs:
           name: Update Prod Environment
           command: |
             source ./.circleci/duplo_utils.sh
-            tag=$(git rev-parse HEAD)
+            tag=$(node -p "require('./package.json').version")
             update_service $tag
       - run:
           name: Verify Prod Environment
           command: |
             echo "Verifying Prod Environment"
+  release_finish:
+    <<: *defaults
+     steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Publish Released container
+          command: |
+            source ./.circleci/duplo_utils.sh
+            tag=$(node -p "require('./package.json').version")
+            release_container $tag
 workflows:
   version: 2.1
   build_test_publish:
@@ -133,9 +144,39 @@ workflows:
           filters:
             tags:
               only: /^v.*/
-      - publish_docker_images:
+      - publish_docker_rc_docker_image:
           requires:
             - build_and_test
           filters:
-            tags:
-              only: /^v.*/
+            branch:
+              only: master
+      - deploy_dev:
+          requires:
+            - publish_docker_rc_docker_image
+          filters:
+            branch:
+              only: master
+      - deploy_staging:
+          requires:
+            - deploy_dev
+          filters:
+            branch:
+              only: master
+      - deploy_preprod:
+          requires:
+            - deploy_staging
+          filters:
+            branch:
+              only: master
+      - release_finish:
+          requires:
+            - deploy_prod
+          filters:
+            branch:
+              only: master
+      - deploy_prod:
+          requires:
+            - deploy_preprod
+          filters:
+            branch:
+              only: master
