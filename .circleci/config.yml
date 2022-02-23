@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Verify Dev Environment
           command: |
-            echo "Verifying dev environment"
+            echo "Verifying Dev environment"
   DeployToStaging:
     <<: *defaults
     steps:
@@ -92,9 +92,9 @@ jobs:
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
       - run:
-          name: Verify Dev Environment
+          name: Verify Staging Environment
           command: |
-            echo "Verifying Dev environment"
+            echo "Verifying Staging environment"
   deploy_preprod:
     <<: *defaults
     steps:
@@ -120,7 +120,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            update_service $tag
+            update_service_rc $PREPROD_TENANT $tag
       - run:
           name: Verify Prod Environment
           command: |
@@ -135,7 +135,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            release_container $tag
+            release_container $PROD_TENANT $tag
 workflows:
   version: 2.1
   build_test_publish:
