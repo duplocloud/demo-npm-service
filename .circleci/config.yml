@@ -51,11 +51,9 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - run:
-          name: Install AWS CLI
+          name: Install Dependencies
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
+            source ./.circleci/duplo_utils.sh && install_dependencies
       - run:
           name: Create and Push Docker container
           command: |
@@ -131,11 +129,16 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Install Dependencies
+          command: |
+            source ./.circleci/duplo_utils.sh && install_dependencies
+      - run:
           name: Publish Released container
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             release_container $PROD_TENANT $tag
+            bump_version_in_master
 workflows:
   version: 2.1
   build_test_publish:

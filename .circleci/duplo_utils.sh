@@ -196,3 +196,8 @@ update_lambda_functions(){
     duplo_api_post "subscriptions/${tenantId}/UpdateLambdaFunction" "$data"
   done
 }
+
+bump_npm_version_in_master(){
+  npm version patch
+  git push origin master
+}
