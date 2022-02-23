@@ -13,7 +13,7 @@ defaults: &defaults
     DUPLO_SERVICE_NAME: nginx
     ECR_REGION: us-west-2
 jobs:
-  build_and_test:
+  BuildAndTest:
     <<: *defaults
     steps:
       - checkout
@@ -43,7 +43,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths: .
-  publish_docker_rc_docker_image:
+  PublishDockerContainerRC:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -64,8 +64,8 @@ jobs:
             docker_tag=$(get_docker_tag_rc $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
-            push_container $tag
-  deploy_dev:
+            push_container_rc $tag
+  DeployToDev:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -80,7 +80,7 @@ jobs:
           name: Verify Dev Environment
           command: |
             echo "Verifying dev environment"
-  deploy_staging:
+  DeployToStaging:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -110,7 +110,7 @@ jobs:
           name: Verify PreProd Environment
           command: |
             echo "Verifying PreProd Environment"
-  deploy_prod:
+  DeployToProd:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -125,7 +125,7 @@ jobs:
           name: Verify Prod Environment
           command: |
             echo "Verifying Prod Environment"
-  release_finish:
+  CompleteTheRelease:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -140,41 +140,41 @@ workflows:
   version: 2.1
   build_test_publish:
     jobs:
-      - build_and_test:
+      - BuildAndTest:
           filters:
             tags:
               only: /^v.*/
-      - publish_docker_rc_docker_image:
+      - PublishDockerContainerRC:
           requires:
-            - build_and_test
+            - BuildAndTest
           filters:
             branches:
               only: master
-      - deploy_dev:
+      - DeployToDev:
           requires:
-            - publish_docker_rc_docker_image
+            - PublishDockerContainerRC
           filters:
             branches:
               only: master
-      - deploy_staging:
+      - DeployToStaging:
           requires:
-            - deploy_dev
+            - DeployToDev
           filters:
             branches:
               only: master
       - deploy_preprod:
           requires:
-            - deploy_staging
+            - DeployToStaging
           filters:
             branches:
               only: master
-      - release_finish:
+      - CompleteTheRelease:
           requires:
-            - deploy_prod
+            - DeployToProd
           filters:
             branches:
               only: master
-      - deploy_prod:
+      - DeployToProd:
           requires:
             - deploy_preprod
           filters:
