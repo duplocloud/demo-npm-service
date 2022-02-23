@@ -198,7 +198,7 @@ update_lambda_functions(){
   done
 }
 
-bump_node_version_in_master(){
+bump_version_in_master_nodejs(){
   v=get_version_nodejs
   echo "Current version $v"
   git stash

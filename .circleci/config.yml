@@ -147,7 +147,7 @@ jobs:
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             release_container $tag
-            bump_npm_version_in_master
+            bump_version_in_master_nodejs
 workflows:
   version: 2.1
   build_test_publish:
