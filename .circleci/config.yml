@@ -132,6 +132,8 @@ jobs:
           name: Install Dependencies
           command: |
             source ./.circleci/duplo_utils.sh && install_dependencies
+      - setup_remote_docker:
+          version: 19.03.13
       - run:
           name: Publish Released container
           command: |
