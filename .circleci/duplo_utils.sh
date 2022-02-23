@@ -199,11 +199,11 @@ update_lambda_functions(){
 }
 
 bump_version_in_master_nodejs(){
-  v=get_version_nodejs
+  v=$(get_version_nodejs)
   echo "Current version $v"
   git stash
   npm version patch
-  v=get_version_nodejs
+  v=$(get_version_nodejs)
   echo "New version $v"
   git push origin master
   echo "Release finished"
