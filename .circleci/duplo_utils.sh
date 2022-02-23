@@ -198,7 +198,18 @@ update_lambda_functions(){
   done
 }
 
-bump_npm_version_in_master(){
+bump_node_version_in_master(){
+  v=get_version_nodejs
+  echo "Current version $v"
+  git stash
   npm version patch
+  v=get_version_nodejs
+  echo "New version $v"
   git push origin master
+  echo "Release finished"
+}
+
+get_version_nodejs(){
+  v=$(node -p "require('./package.json').version")
+  echo $v
 }
