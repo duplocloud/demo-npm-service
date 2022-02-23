@@ -4,13 +4,14 @@ defaults: &defaults
   docker:
     - image: cimg/node:17.5.0
   environment:
-    DEV_TENANT_ID: 9a8a0506-3598-4ce5-80fe-6a5307b98ea3
-    PROD_TENANT_ID: 97a8d5a4-2662-4e9c-9867-9a4565ec5cb6
-    QA_TENANT_ID: 97a8d5a4-2662-4e9c-9867-9a4565ec5cb6
+    DEV_TENANT: dev01
+    PROD_TENANT: production
+    STAGING_TENANT: staging
+    PREPROD_TENANT: preprod
     DOCKER_REPO: public.ecr.aws/p9c8y2k3
     DOCKER_IMAGE_NAME: demo-npm-service
     DUPLO_SERVICE_NAME: nginx
-
+    ECR_REGION: us-west-2
 jobs:
   build_and_test:
     <<: *defaults
@@ -63,13 +64,67 @@ jobs:
             docker_tag=$(get_docker_tag $tag)
             echo "Starting build for container: $docker_tag"
             docker build -t $docker_tag . 
-            push_container $tag      
+            push_container $tag
+  deploy_dev:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
       - run:
-          name: Update the service
+          name: Update Dev Environment
           command: |
             source ./.circleci/duplo_utils.sh
-            tag=$(node -p "require('./package.json').version")
+            tag=$(git rev-parse HEAD)
+            update_service $DEV_TENANT $tag
+      - run:
+          name: Verify Dev Environment
+          command: |
+            echo "Verifying dev environment"
+  deploy_staging:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Update staging Environment
+          command: |
+            source ./.circleci/duplo_utils.sh
+            tag=$(git rev-parse HEAD)
+            update_service $STAGING_TENANT $tag
+      - run:
+          name: Verify Dev Environment
+          command: |
+            echo "Verifying Dev environment"
+  deploy_preprod:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Update PreProd Environment
+          command: |
+            source ./.circleci/duplo_utils.sh
+            tag=$(git rev-parse HEAD)
+            update_service $STAGING_TENANT $tag
+      - run:
+          name: Verify PreProd Environment
+          command: |
+            echo "Verifying PreProd Environment"
+  deploy_prod:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Update Prod Environment
+          command: |
+            source ./.circleci/duplo_utils.sh
+            tag=$(git rev-parse HEAD)
             update_service $tag
+      - run:
+          name: Verify Prod Environment
+          command: |
+            echo "Verifying Prod Environment"
 workflows:
   version: 2.1
   build_test_publish:
