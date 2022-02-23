@@ -6,7 +6,7 @@ defaults: &defaults
   environment:
     DEV_TENANT: dev01
     PROD_TENANT: production
-    STAGING_TENANT: staging
+    SNP_TENANT: staging
     PREPROD_TENANT: preprod
     DOCKER_REPO: public.ecr.aws/p9c8y2k3
     DOCKER_IMAGE_NAME: demo-npm-service
@@ -80,21 +80,21 @@ jobs:
           name: Verify Dev Environment
           command: |
             echo "Verifying Dev environment"
-  DeployToStaging:
+  DeployToSNP:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Update staging Environment
+          name: Update SNP Environment
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            update_service_rc $STAGING_TENANT $tag
+            update_service_rc $SNP_TENANT $tag
       - run:
-          name: Verify Staging Environment
+          name: Verify SNP Environment
           command: |
-            echo "Verifying Staging environment"
+            echo "Verifying SNP environment"
   deploy_preprod:
     <<: *defaults
     steps:
@@ -105,7 +105,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            update_service_rc $STAGING_TENANT $tag
+            update_service_rc $SNP_TENANT $tag
       - run:
           name: Verify PreProd Environment
           command: |
@@ -156,7 +156,7 @@ workflows:
           filters:
             branches:
               only: master
-      - DeployToStaging:
+      - DeployToSNP:
           requires:
             - DeployToDev
           filters:
@@ -164,7 +164,7 @@ workflows:
               only: master
       - deploy_preprod:
           requires:
-            - DeployToStaging
+            - DeployToSNP
           filters:
             branches:
               only: master
