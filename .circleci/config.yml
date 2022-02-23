@@ -135,6 +135,12 @@ jobs:
             source ./.circleci/duplo_utils.sh && install_dependencies
       - setup_remote_docker:
           version: 19.03.13
+      - run: 
+          name: Setup Git
+          command: |
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "ganesh@duplocloud.com"
+            git config --global user.name "Ganesh"
       - run:
           name: Publish Released container
           command: |
