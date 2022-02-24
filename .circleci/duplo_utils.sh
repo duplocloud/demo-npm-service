@@ -113,12 +113,12 @@ get_docker_tag(){
 }
 
 push_container_rc(){
-  tag=$(get_rc_tag $@)
+  tag=$(get_docker_tag_rc $@)
   push_container $tag
 }
 
 push_container_release(){
-  tag=$(get_release_tag $@)
+  tag=$(get_docker_tag $@)
   push_container $tag
 }
 
