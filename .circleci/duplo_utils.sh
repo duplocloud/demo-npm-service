@@ -117,8 +117,13 @@ push_container_rc(){
   push_container $tag
 }
 
+push_container_release(){
+  tag=$(get_release_tag $@)
+  push_container $tag
+}
+
 push_container(){
-  tag=$(get_docker_tag $@)
+  tag=$1
   with_aws aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REPO
   with_aws docker push $tag
 }
