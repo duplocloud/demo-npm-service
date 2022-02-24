@@ -79,7 +79,7 @@ jobs:
           name: Verify Dev Environment
           command: |
             echo "Verifying Dev environment"
-      -run:
+      - run:
           name: Rollback Dev
           command: |
             source ./.circleci/duplo_utils.sh
