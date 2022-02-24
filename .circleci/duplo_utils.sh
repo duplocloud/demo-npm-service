@@ -93,7 +93,15 @@ tf_init() {
 }
 
 get_rc_tag(){
+  sha="${CIRCLE_SHA1}"
+  shat10=${sha:0:10}
 	echo "$@-rc-${CIRCLE_PIPELINE_NUMBER}"
+}
+
+get_release_tag(){
+  sha="${CIRCLE_SHA1}"
+  shat10=${sha:0:10}
+  echo "$@-rc-${shat10}"
 }
 
 get_docker_tag_rc(){
@@ -101,7 +109,7 @@ get_docker_tag_rc(){
 }
 
 get_docker_tag(){
-  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$@"
+  echo "${DOCKER_REPO}/${DOCKER_IMAGE_NAME}:$(get_release_tag $@)"
 }
 
 push_container_rc(){
@@ -218,7 +226,7 @@ get_version_nodejs(){
 
 rollback_dev(){
   local devTenant="${DEV_TENANT}"
-  local stagingTenant="${STAGING_TENANT}"
+  local stagingTenant="${SNP_TENANT}"
   local devTenantId=$(get_tenant_id $devTenant)
   local stagingId=$(get_tenant_id $stagingTenant)
   local serviceName=${DUPLO_SERVICE_NAME}
