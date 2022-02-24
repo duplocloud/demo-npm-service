@@ -153,10 +153,7 @@ update_service_rc(){
   tag=$(get_docker_tag_rc $tag)
   echo "Updating service in tenant: ${tenant}"
   local tenantId=$(get_tenant_id $tenant)
-  echo "Updating service in tenant id: ${tenantId}"
-  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${tag}\"}"
-  echo "Update service for tenant: ${tenantId}, Update: ${data}"
-  duplo_api_post "subscriptions/${tenantId}/ReplicationControllerChange" "$data"
+  update_service_api $tenantId $tag
 }
 
 update_service(){
@@ -165,14 +162,19 @@ update_service(){
   tag="${1:-}"
   [ $# -eq 0 ] || shift
   tag=$(get_docker_tag $tag)
-  echo "Updating service in tenant: ${tenant}"
   local tenantId=$(get_tenant_id $tenant)
+  update_service_api $tenantId $tag
+}
+
+update_service_api(){
+  tenantId=$1;
+  image=$2
+  echo "Updating service in tenant: ${tenant}"
   echo "Updating service in tenant id: ${tenantId}"
-  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${tag}\"}"
+  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${image}\"}"
   echo "Update service for tenant: ${tenantId}, Update: ${data}"
   duplo_api_post "subscriptions/${tenantId}/ReplicationControllerChange" "$data"
 }
-
 update_lambda_functions(){
   local tenant="${1:-}"
   tag=$(git rev-parse HEAD)
@@ -212,4 +214,14 @@ bump_version_in_master_nodejs(){
 get_version_nodejs(){
   v=$(node -p "require('./package.json').version")
   echo $v
+}
+
+rollback_dev(){
+  local devTenant="${DEV_TENANT}"
+  local stagingTenant="${STAGING_TENANT}"
+  local devTenantId=$(get_tenant_id $devTenant)
+  local stagingId=$(get_tenant_id $stagingTenant)
+  local serviceName=${DUPLO_SERVICE_NAME}
+  stagingImage=$(duplo_api "/subscriptions/${stagingId}/GetReplicationControllers" | jq -c ".[] | select( .Template.Name | contains(\"${serviceName}\"))" | jq -r '.Template.Containers[0].Image')
+  update_service_api $devTenantId $stagingImage
 }
