@@ -101,7 +101,7 @@ get_rc_tag(){
 get_release_tag(){
   sha="${CIRCLE_SHA1}"
   shat10=${sha:0:10}
-  echo "$@-rc-${shat10}"
+  echo "$@-${shat10}"
 }
 
 get_docker_tag_rc(){

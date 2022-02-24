@@ -7,7 +7,7 @@ defaults: &defaults
     DEV_TENANT: dev01
     PROD_TENANT: production
     STAGING_TENANT: staging
-    SNP_TENANT: SNP
+    SNP_TENANT: preprod
     DOCKER_REPO: public.ecr.aws/p9c8y2k3
     DOCKER_IMAGE_NAME: demo-npm-service
     DUPLO_SERVICE_NAME: nginx
