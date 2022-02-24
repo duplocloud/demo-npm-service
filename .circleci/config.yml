@@ -126,7 +126,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            update_service_rc $SNP_TENANT $tag
+            update_service $PROD_TENANT $tag
       - run:
           name: Verify Prod Environment
           command: |
@@ -189,13 +189,13 @@ workflows:
               only: master
       - CompleteTheRelease:
           requires:
-            - DeployToProd
+            - DeployToSNP
           filters:
             branches:
               only: master
       - DeployToProd:
           requires:
-            - DeployToSNP
+            - CompleteTheRelease
           filters:
             branches:
               only: master
