@@ -205,8 +205,7 @@ bump_version_in_master_nodejs(){
   npm version patch
   v=$(get_version_nodejs)
   echo "New version $v"
-  ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
-  git push origin master
+  git push
   echo "Release finished"
 }
 
