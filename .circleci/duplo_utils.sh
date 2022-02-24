@@ -95,7 +95,7 @@ tf_init() {
 get_rc_tag(){
   sha="${CIRCLE_SHA1}"
   shat10=${sha:0:10}
-	echo "$@-rc-${CIRCLE_PIPELINE_NUMBER}"
+	echo "$@-rc-${shat10}"
 }
 
 get_release_tag(){
