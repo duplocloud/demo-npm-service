@@ -40,7 +40,6 @@ jobs:
       - run: 
           name: build docker container
           command: docker build .
-        
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -187,12 +186,12 @@ workflows:
             branches:
               only: master
       - request-testing:
-        type: approval
-        requires:
+          type: approval
+          requires:
           - DeployToSNP
       - CompleteTheRelease:
           requires:
-            - request-testing:
+            - request-testing
           filters:
             branches:
               only: master
