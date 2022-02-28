@@ -186,9 +186,13 @@ workflows:
           filters:
             branches:
               only: master
+      - request-testing:
+        type: approval
+        requires:
+          - DeployToSNP
       - CompleteTheRelease:
           requires:
-            - DeployToSNP
+            - request-testing:
           filters:
             branches:
               only: master
