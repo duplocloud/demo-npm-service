@@ -98,6 +98,9 @@ jobs:
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
+  VerifyStaging:
+    executor: vpn/default
+    steps:
       - vpn/install
       - vpn/connect
       - run:
