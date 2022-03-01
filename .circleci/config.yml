@@ -1,6 +1,6 @@
 version: 2.1
 orbs: 
-  vpn: duplocloud/openvpn@master
+  vpn: duplocloud/openvpn@0.1.2
 defaults: &defaults
   working_directory: ~/repo
   docker:
