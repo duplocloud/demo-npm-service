@@ -106,9 +106,12 @@ jobs:
       - run:
           name: Connect openvpn
           command: |
+            echo ${<<parameters.config>>:?} | base64 --decode >> config.ovpn
+            echo ${<<parameters.login>>:?} | base64 --decode >> vpn.login
             sudo openvpn --config config.ovpn --auth-user-pass vpn.login > openvpn.log 2>&1 &
             while [ -n "$(ip addr show tun0 2>&1 > /dev/null)" ]; do
-              sleep 0.1;
+              cat openvpn.log
+              sleep 1;
             done
             cat openvpn.log
       - run:
