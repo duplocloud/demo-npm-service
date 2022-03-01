@@ -105,7 +105,7 @@ jobs:
           command: |
             echo "Verifying Staging environment"
             curl https://nginx-staging.poc.duplocloud.net:9200
-       - vpn/disconnect
+      - vpn/disconnect
   DeployToSNP:
     <<: *defaults
     steps:
