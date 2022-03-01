@@ -99,7 +99,8 @@ jobs:
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
   VerifyStaging:
-    executor: vpn/default
+    machine:
+      image: ubuntu-1604:202004-01
     steps:
       - vpn/install
       - vpn/connect
