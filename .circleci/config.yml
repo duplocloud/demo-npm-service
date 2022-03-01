@@ -1,4 +1,6 @@
 version: 2.1
+orbs: 
+  openvpn: titel-media/openvpn@0.1.1
 defaults: &defaults
   working_directory: ~/repo
   docker:
@@ -97,10 +99,14 @@ jobs:
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
+      - vpn/install
+      - vpn/connect
       - run:
           name: Verify Staging Environment
           command: |
             echo "Verifying Staging environment"
+            curl https://nginx-staging.poc.duplocloud.net:9200
+       - vpn/disconnect
   DeployToSNP:
     <<: *defaults
     steps:
