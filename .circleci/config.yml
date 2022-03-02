@@ -101,21 +101,21 @@ jobs:
   VerifyStaging:
     machine:
       image: ubuntu-1604:202004-01
+    working_directory: ~/repo
     steps:
+      - attach_workspace:
+          at: ~/repo
       - vpn/install
       - run:
           name: Verify Staging Environment
           command: |
-            echo ${VPN_CONFIG} | base64 --decode >> config.ovpn
-            echo ${VPN_LOGIN} | base64 --decode >> vpn.login
-            sudo openvpn --config config.ovpn --auth-user-pass vpn.login > openvpn.log 2>&1 &
-            while [ -n "$(ip addr show tun0 2>&1 > /dev/null)" ]; do
-              cat openvpn.log
-              sleep 1;
-            done
-            cat openvpn.log
+            source ./.circleci/duplo_utils.sh
+            connect_vpn
+      - run:
+          name: Verify Staging Environment
+          command: |
+            source ./.circleci/duplo_utils.sh
             echo "Verifying Staging environment"
-            sleep 30
             ps -eaf | grep openvpn
             echo "Install newman"
             npm install -g newman

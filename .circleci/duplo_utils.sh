@@ -238,3 +238,14 @@ rollback_dev(){
   stagingImage=$(duplo_api "/subscriptions/${stagingId}/GetReplicationControllers" | jq -c ".[] | select( .Template.Name | contains(\"${serviceName}\"))" | jq -r '.Template.Containers[0].Image')
   update_service_api $devTenantId $stagingImage
 }
+
+connect_vpn(){
+  echo ${VPN_CONFIG} | base64 --decode >> config.ovpn
+  echo ${VPN_LOGIN} | base64 --decode >> vpn.login
+  sudo nohup openvpn --config config.ovpn --auth-user-pass vpn.login > openvpn.log 2>&1 &
+  while [ -n "$(ip addr show tun0 2>&1 > /dev/null)" ]; do
+    cat openvpn.log
+    sleep 1;
+  done
+  cat openvpn.log
+}
