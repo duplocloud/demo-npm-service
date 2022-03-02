@@ -112,7 +112,7 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             connect_vpn
-       run:
+      - run:
           name: Connect to VPN
           command: npm install -g newman
       - newman/newman-run:
