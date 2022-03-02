@@ -97,6 +97,11 @@ jobs:
           at: ~/repo
       - dynamo-lock/setup
       - run:
+          name: Get a Staging Lock
+          command: |
+            source ./.circleci/duplo_utils.sh
+            lock staging_deployment 300
+      - run:
           name: Update Staging Environment
           command: |
             source ./.circleci/duplo_utils.sh
@@ -110,12 +115,6 @@ jobs:
     steps:
       - checkout
       - vpn/install
-      - dynamo-lock/setup
-      - run:
-          name: Get a Staging Lock
-          command: |
-            source ./.circleci/duplo_utils.sh
-            lock staging_deployment 300
       - run:
           name: Connect to VPN
           command: |
@@ -196,16 +195,10 @@ workflows:
   version: 2.1
   build_test_publish:
     jobs:
-      - VerifyStaging:
-          filters:
-            tags:
-              only: /^v.*/
       - BuildAndTest:
           filters:
             tags:
               only: /^v.*/
-          requires:
-            - VerifyStaging
       - PublishDockerContainerRC:
           requires:
             - BuildAndTest
@@ -224,9 +217,15 @@ workflows:
           filters:
             branches:
               only: master
-      - DeployToSNP:
+      - VerifyStaging:
           requires:
             - DeployToStaging
+          filters:
+            tags:
+              only: /^v.*/
+      - DeployToSNP:
+          requires:
+            - VerifyStaging
           filters:
             branches:
               only: master
