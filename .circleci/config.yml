@@ -104,7 +104,7 @@ jobs:
     steps:
       - vpn/install
       - run:
-          name: Connect openvpn
+          name: Verify Staging Environment
           command: |
             echo ${VPN_CONFIG} | base64 --decode >> config.ovpn
             echo ${VPN_LOGIN} | base64 --decode >> vpn.login
@@ -114,9 +114,6 @@ jobs:
               sleep 1;
             done
             cat openvpn.log
-      - run:
-          name: Verify Staging Environment
-          command: |
             echo "Verifying Staging environment"
             sleep 30
             ps -eaf | grep openvpn
