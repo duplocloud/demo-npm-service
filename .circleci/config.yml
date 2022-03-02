@@ -110,6 +110,8 @@ jobs:
     steps:
       - checkout
       - vpn/install
+      - dynamo-lock/setup
+      - dynamo-lock/lock
       - run:
           name: Connect to VPN
           command: |
