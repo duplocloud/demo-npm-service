@@ -111,7 +111,11 @@ jobs:
       - checkout
       - vpn/install
       - dynamo-lock/setup
-      - dynamo-lock/lock
+      - run:
+          name: Get a Staging Lock
+          command: |
+            source ./.circleci/duplo_utils.sh
+            lock staging_deployment 300
       - run:
           name: Connect to VPN
           command: |
@@ -124,8 +128,17 @@ jobs:
           collection: https://api.getpostman.com/collections/18088664-dae5fd34-6ba7-4874-a14e-5708a0191f1a?apikey=$POSTMAN_API_KEY
           environment: https://api.getpostman.com/environments/18088664-7b1a24ad-3bcd-427f-84ae-4d3f6fd6a28c?apikey=$POSTMAN_API_KEY
       - vpn/disconnect
-      - dynamo-lock/unlock-on-fail
-      - dynamo-lock/unlock
+      - run:
+          name: Release a Staging Lock
+          command: |
+            source ./.circleci/duplo_utils.sh
+            unlock staging_deployment 300
+      - run:
+          name: Release a Staging Lock on fail
+          command: |
+            source ./.circleci/duplo_utils.sh
+            unlock staging_deployment 300
+          when: on_fail
   DeployToSNP:
     <<: *defaults
     steps:

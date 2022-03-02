@@ -249,3 +249,25 @@ connect_vpn(){
   done
   cat openvpn.log
 }
+
+lock(){
+  lock_name=$1
+  ttl=$2
+  with_aws /tmp/dynolocker_linux_amd64 \
+            --debug \
+            --table "ci_locks" \
+            --name "${lock_name}" \
+            --ttl $ttl \
+            lock
+}
+
+un_lock(){
+  lock_name=$1
+  ttl=$2
+  with_aws /tmp/dynolocker_linux_amd64 \
+            --debug \
+            --table "ci_locks" \
+            --name "${lock_name}" \
+            --ttl $ttl \
+            unlock
+}
