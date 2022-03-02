@@ -205,33 +205,45 @@ workflows:
           filters:
             tags:
               only: /^v.*/
+          context:
+            - global
       - PublishDockerContainerRC:
           requires:
             - BuildAndTest
+          context:
+            - global
           filters:
             branches:
               only: master
       - DeployToDev:
           requires:
             - PublishDockerContainerRC
+          context:
+            - global
           filters:
             branches:
               only: master
       - DeployToStaging:
           requires:
             - DeployToDev
+          context:
+            - global
           filters:
             branches:
               only: master
       - VerifyStaging:
           requires:
             - DeployToStaging
+          context:
+            - global
           filters:
             tags:
               only: /^v.*/
       - DeployToSNP:
           requires:
             - VerifyStaging
+          context:
+            - global
           filters:
             branches:
               only: master
@@ -242,12 +254,16 @@ workflows:
       - CompleteTheRelease:
           requires:
             - request-testing
+          context:
+            - global
           filters:
             branches:
               only: master
       - DeployToProd:
           requires:
             - CompleteTheRelease
+          context:
+            - global
           filters:
             branches:
               only: master
