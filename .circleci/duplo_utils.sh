@@ -258,10 +258,11 @@ lock(){
             --table "ci_locks" \
             --name "${lock_name}" \
             --ttl $ttl \
+            --region "us-west-2" \
             lock
 }
 
-un_lock(){
+unlock(){
   lock_name=$1
   ttl=$2
   with_aws /tmp/dynolocker_linux_amd64 \
@@ -269,5 +270,6 @@ un_lock(){
             --table "ci_locks" \
             --name "${lock_name}" \
             --ttl $ttl \
+            --region "us-west-2" \
             unlock
 }
