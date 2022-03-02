@@ -1,7 +1,8 @@
 version: 2.1
 orbs: 
   vpn: titel-media/openvpn@0.1.1
-  newman: postman/newman@1.0.0
+  newman: postman/newman@0.0.2
+
 defaults: &defaults
   working_directory: ~/repo
   docker:
