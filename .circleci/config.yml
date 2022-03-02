@@ -2,6 +2,7 @@ version: 2.1
 orbs: 
   vpn: titel-media/openvpn@0.1.1
   newman: postman/newman@0.0.2
+  dynamo-lock: gastfreund/dynamo-lock@1.0.1
 
 defaults: &defaults
   working_directory: ~/repo
@@ -94,12 +95,14 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - dynamo-lock/setup
       - run:
           name: Update Staging Environment
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
+      - dynamo-lock/unlock-on-fail
   VerifyStaging:
     machine:
       image: ubuntu-1604:202004-01
@@ -118,14 +121,9 @@ jobs:
       - newman/newman-run:
           collection: https://api.getpostman.com/collections/18088664-dae5fd34-6ba7-4874-a14e-5708a0191f1a?apikey=$POSTMAN_API_KEY
           environment: https://api.getpostman.com/environments/18088664-7b1a24ad-3bcd-427f-84ae-4d3f6fd6a28c?apikey=$POSTMAN_API_KEY
-      # - run:
-      #     name: Verify Staging Environment
-      #     command: |
-      #       echo "Install newman"
-      #       npm install -g newman
-      #       echo "Run newman test"
-      #       newman run https://api.getpostman.com/collections/18088664-dae5fd34-6ba7-4874-a14e-5708a0191f1a?apikey=$POSTMAN_API_KEY -e https://api.getpostman.com/environments/18088664-7b1a24ad-3bcd-427f-84ae-4d3f6fd6a28c?apikey=$POSTMAN_API_KEY
       - vpn/disconnect
+      - dynamo-lock/unlock-on-fail
+      - dynamo-lock/unlock
   DeployToSNP:
     <<: *defaults
     steps:
