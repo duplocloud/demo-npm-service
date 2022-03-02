@@ -107,7 +107,12 @@ jobs:
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
             update_service_rc $STAGING_TENANT $tag
-      - dynamo-lock/unlock-on-fail
+      - run:
+          name: Release a Staging Lock on fail
+          command: |
+            source ./.circleci/duplo_utils.sh
+            unlock staging_deployment 300
+          when: on_fail
   VerifyStaging:
     machine:
       image: ubuntu-1604:202004-01
