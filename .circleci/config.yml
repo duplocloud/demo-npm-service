@@ -118,7 +118,9 @@ jobs:
           name: Verify Staging Environment
           command: |
             echo "Verifying Staging environment"
-            sleep 15
+            sleep 30
+            ps -eaf | grep openvpn
+            echo "Trying to connect to the private api"
             curl https://carrier-engine-dev.api.cover-force.com/
       - vpn/disconnect
   DeployToSNP:
