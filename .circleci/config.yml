@@ -118,7 +118,7 @@ jobs:
           name: Verify Staging Environment
           command: |
             echo "Verifying Staging environment"
-            sleep 5
+            sleep 15
             curl https://carrier-engine-dev.api.cover-force.com/
       - vpn/disconnect
   DeployToSNP:
