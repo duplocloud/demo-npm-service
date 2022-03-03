@@ -204,6 +204,9 @@ jobs:
 workflows:
   version: 2.1
   build_test_publish:
+    when:
+      not:
+        equal: [ true, <<  pipeline.parameters.create_image >> ]
     jobs:
       - BuildAndTest:
           filters:
