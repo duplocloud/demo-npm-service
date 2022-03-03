@@ -273,7 +273,7 @@ workflows:
               only: master
   build_test_publish_manual:
     when:
-      equal: [ true, << pipeline.parameter.create_image >> ]
+      equal: [ true, <<  pipeline.parameters.create_image >> ]
     jobs:
       - BuildAndTest:
           filters:
