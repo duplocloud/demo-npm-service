@@ -1,8 +1,8 @@
 version: 2.1
 parameters:
   create_image:
-    type: string
-    default: "false"
+    type: boolean
+    default: false
 orbs: 
   vpn: titel-media/openvpn@0.1.1
   newman: postman/newman@0.0.2
