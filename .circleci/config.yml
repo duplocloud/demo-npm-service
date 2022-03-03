@@ -200,6 +200,9 @@ jobs:
 workflows:
   version: 2.1
   build_test_publish:
+    when:
+      - not:
+          equal: [ true, << pipeline.parameter.create_image >> ]
     jobs:
       - BuildAndTest:
           filters:
@@ -267,3 +270,18 @@ workflows:
           filters:
             branches:
               only: master
+  build_test_publish_manual:
+    when:
+      - equal: [ true, << pipeline.parameter.create_image >> ]
+    jobs:
+      - BuildAndTest:
+          filters:
+            tags:
+              only: /^v.*/
+          context:
+            - global
+      - PublishDockerContainerRC:
+          requires:
+            - BuildAndTest
+          context:
+            - global
