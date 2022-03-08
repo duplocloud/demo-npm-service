@@ -1,4 +1,0 @@
-{
-    "Name": "nginx",
-    "DockerImage": "#DOCKER_IMAGE#"
-}
