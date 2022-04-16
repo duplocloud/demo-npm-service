@@ -145,7 +145,7 @@ get_tenant_id(){
    local tenant="${1:-}"
    [ $# -eq 0 ] || shift
    [ -z "${tenant:-}" ] && die "Internal error: no tenant id is provided"
-   duplo_api "adminproxy/GetTenantNames" | jq -c ".[] | select( .AccountName | contains(\"${tenant}\"))" | jq -r '.TenantId'
+   duplo_api "adminproxy/GetTenantNames" | jq -c ".[] | select( .AccountName == \"${tenant}\" )" | jq -r '.TenantId'
 }
 
 install_dependencies(){
