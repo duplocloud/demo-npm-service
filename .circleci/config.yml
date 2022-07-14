@@ -276,17 +276,6 @@ workflows:
             branches:
               only: master
   build_test_publish_manual:
-    when:
-      equal: [ true, <<  pipeline.parameters.create_image >> ]
     jobs:
-      - BuildAndTest:
-          filters:
-            tags:
-              only: /^v.*/
-          context:
-            - global
-      - PublishDockerContainerRC:
-          requires:
-            - BuildAndTest
-          context:
-            - global
+      - DeployToStaging:
+            
