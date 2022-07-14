@@ -277,5 +277,5 @@ workflows:
               only: master
   build_test_publish_manual:
     jobs:
-      - DeployToStaging:
+      - DeployToStaging
             
