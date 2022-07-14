@@ -110,7 +110,8 @@ jobs:
           command: |
             source ./.circleci/duplo_utils.sh
             tag=$(node -p "require('./package.json').version")
-            update_service_rc $STAGING_TENANT $tag
+            #update_service_rc $STAGING_TENANT $tag
+            sleep 300
       - run:
           name: Release a Staging Lock on fail
           command: |
