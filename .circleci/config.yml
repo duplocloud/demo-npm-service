@@ -99,6 +99,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+      - checkout
       - dynamo-lock/setup
       - run:
           name: Get a Staging Lock
