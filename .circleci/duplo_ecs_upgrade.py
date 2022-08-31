@@ -6,7 +6,7 @@ import sys
 from logger import logging
 from datetime import datetime, timedelta
 logger = None
-duplo_engine =  environ.get('DUPLO_EP') + '/subscriptions/' + environ.get('TENANT_ID')
+duplo_engine =  environ.get('DUPLO_HOST') + '/subscriptions/' + environ.get('TENANT_ID')
 def deploy_new_service(g_serviceName, aInImage, aInHeaders):
     serviceUrl = duplo_engine + '/GetEcsServices'
     response = requests.get(serviceUrl, headers=aInHeaders)
@@ -96,6 +96,6 @@ def remove_empty_from_dict(d):
         return d
 if __name__ == '__main__':
     logger = setup_custom_logger('CustomDeploy')
-    jheaders = {"Content-type": "application/json", "Authorization": "Bearer " + environ.get('DUPLO_SSO_TOKEN')}
+    jheaders = {"Content-type": "application/json", "Authorization": "Bearer " + environ.get('DUPLO_TOKEN')}
     #jheaders = {"Content-type": "application/json"}
     deploy_new_service(sys.argv[1], sys.argv[2], jheaders)
