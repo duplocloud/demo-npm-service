@@ -184,7 +184,8 @@ update_service_api(){
   image=$2
   echo "Updating service in tenant: ${tenant}"
   echo "Updating service in tenant id: ${tenantId}"
-  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${image}\"}"
+  allocationTag=$(duplo_api "/subscriptions/${tenantId}/GetReplicationControllers" | jq -c ".[] | select( .Template.Name | contains(\"${DUPLO_SERVICE_NAME}\"))" | jq -r '.Template.AllocationTags')
+  data="{\"Name\": \"${DUPLO_SERVICE_NAME}\",\"Image\":\"${image}\",\"AllocationTags\":\"${allocationTag}\"}"
   echo "Update service for tenant: ${tenantId}, Update: ${data}"
   duplo_api_post "subscriptions/${tenantId}/ReplicationControllerChange" "$data"
 }
