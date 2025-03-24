@@ -189,6 +189,17 @@ update_service_api(){
   echo "Update service for tenant: ${tenantId}, Update: ${data}"
   duplo_api_post "subscriptions/${tenantId}/ReplicationControllerChange" "$data"
 }
+
+restart_service_api(){
+  tenantId=$1;
+  serviceName=$2
+  echo "Restarting service in tenant: ${tenant}"
+  echo "Restarting service in tenant id: ${tenantId}"
+  data="{}"
+  echo "Restart service for tenant: ${tenantId}, Update: ${data}"
+  duplo_api_post "subscriptions/${tenantId}/ReplicationControllerReboot/${serviceName}" "$data"
+}
+
 update_lambda_functions(){
   local tenant="${1:-}"
   tag=$(git rev-parse HEAD)
